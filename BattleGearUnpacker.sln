@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattleGearUnpacker", "BattleGearUnpacker\BattleGearUnpacker.csproj", "{591639B4-57F3-478C-9DDA-93A1B82A16CC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryMemory", "..\BinaryMemory\BinaryMemory\BinaryMemory.csproj", "{EC8A6293-D030-4642-8EEC-CD0BDE26C721}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hjg.Pngcs", "..\pngcs\Hjg.Pngcs\Hjg.Pngcs.csproj", "{FD3B0D50-46B3-4A83-9A6D-C641569142CF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug45|Any CPU = Debug45|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Release45|Any CPU = Release45|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{591639B4-57F3-478C-9DDA-93A1B82A16CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{591639B4-57F3-478C-9DDA-93A1B82A16CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{591639B4-57F3-478C-9DDA-93A1B82A16CC}.Debug45|Any CPU.ActiveCfg = Debug|Any CPU
+		{591639B4-57F3-478C-9DDA-93A1B82A16CC}.Debug45|Any CPU.Build.0 = Debug|Any CPU
+		{591639B4-57F3-478C-9DDA-93A1B82A16CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{591639B4-57F3-478C-9DDA-93A1B82A16CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{591639B4-57F3-478C-9DDA-93A1B82A16CC}.Release45|Any CPU.ActiveCfg = Release|Any CPU
+		{591639B4-57F3-478C-9DDA-93A1B82A16CC}.Release45|Any CPU.Build.0 = Release|Any CPU
+		{EC8A6293-D030-4642-8EEC-CD0BDE26C721}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC8A6293-D030-4642-8EEC-CD0BDE26C721}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC8A6293-D030-4642-8EEC-CD0BDE26C721}.Debug45|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC8A6293-D030-4642-8EEC-CD0BDE26C721}.Debug45|Any CPU.Build.0 = Debug|Any CPU
+		{EC8A6293-D030-4642-8EEC-CD0BDE26C721}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC8A6293-D030-4642-8EEC-CD0BDE26C721}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC8A6293-D030-4642-8EEC-CD0BDE26C721}.Release45|Any CPU.ActiveCfg = Release|Any CPU
+		{EC8A6293-D030-4642-8EEC-CD0BDE26C721}.Release45|Any CPU.Build.0 = Release|Any CPU
+		{FD3B0D50-46B3-4A83-9A6D-C641569142CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD3B0D50-46B3-4A83-9A6D-C641569142CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD3B0D50-46B3-4A83-9A6D-C641569142CF}.Debug45|Any CPU.ActiveCfg = Debug45|Any CPU
+		{FD3B0D50-46B3-4A83-9A6D-C641569142CF}.Debug45|Any CPU.Build.0 = Debug45|Any CPU
+		{FD3B0D50-46B3-4A83-9A6D-C641569142CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD3B0D50-46B3-4A83-9A6D-C641569142CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD3B0D50-46B3-4A83-9A6D-C641569142CF}.Release45|Any CPU.ActiveCfg = Release45|Any CPU
+		{FD3B0D50-46B3-4A83-9A6D-C641569142CF}.Release45|Any CPU.Build.0 = Release45|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {60378028-8E6D-45FA-926C-4FD85A17EACC}
+	EndGlobalSection
+EndGlobal

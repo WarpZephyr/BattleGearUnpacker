@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BattleGearUnpacker": {
+      "commandName": "Project",
+      "commandLineArgs": "\"A:\\Research\\Games\\Taito\\Battle Gear 3\\BG3ZPACK-ARC\""
+    }
+  }
+}
