@@ -16,18 +16,18 @@ namespace BattleGearUnpacker.Formats
         internal const int SectorSize = 0x800;
 
         /// <summary>
-        /// The default file entry count for <see cref="ZPACK"/>.
+        /// The allocated file entry count for <see cref="ZPACK"/> archives.
         /// </summary>
-        public const int DefaultFileEntryCount = 8192;
+        public const int FileEntryCount = 8192;
 
         #endregion
 
         #region Members
 
         /// <summary>
-        /// File entries in the archive, 8192 count.
+        /// File entries in the archive, 8192 max.
         /// </summary>
-        public FileEntry[] FileEntries { get; private set; }
+        public List<FileEntry> FileEntries { get; private set; }
 
         #endregion
 
@@ -38,7 +38,7 @@ namespace BattleGearUnpacker.Formats
         /// </summary>
         public ZPACK()
         {
-            FileEntries = new FileEntry[DefaultFileEntryCount];
+            FileEntries = new List<FileEntry>(FileEntryCount);
         }
 
         #endregion
@@ -117,30 +117,40 @@ namespace BattleGearUnpacker.Formats
         #region Methods
 
         /// <summary>
-        /// Read a <see cref="ZPACK"/>.
+        /// Read a <see cref="ZPACK"/> from a stream.
         /// </summary>
         internal static ZPACK Read(BinaryStreamReader headerReader, SectorStream dataStream)
         {
             var zpack = new ZPACK();
 
             headerReader.BigEndian = false;
-            for (int i = 0; i < DefaultFileEntryCount; i++)
+            for (int i = 0; i < FileEntryCount; i++)
             {
-                zpack.FileEntries[i] = new FileEntry(headerReader, dataStream);
+                var entry = new FileEntry(headerReader, dataStream);
+                if (entry.IsEmpty)
+                    break;
+
+                zpack.FileEntries.Add(entry);
             }
 
             return zpack;
         }
 
         /// <summary>
-        /// Write this <see cref="ZPACK"/>.
+        /// Write this <see cref="ZPACK"/> to a stream.
         /// </summary>
-        internal void Write(BinaryStreamWriter headerReader, SectorStream dataStream)
+        internal void Write(BinaryStreamWriter headerWriter, SectorStream dataStream)
         {
-            headerReader.BigEndian = false;
-            for (int i = 0; i < DefaultFileEntryCount; i++)
+            headerWriter.BigEndian = false;
+            for (int i = 0; i < FileEntries.Count; i++)
             {
-                FileEntries[i].Write(headerReader, dataStream);
+                FileEntries[i].Write(headerWriter, dataStream);
+            }
+
+            int emptyCount = FileEntryCount - FileEntries.Count;
+            for (int i = 0; i < emptyCount; i++)
+            {
+                headerWriter.WritePattern(40, 0);
             }
         }
 
@@ -197,7 +207,7 @@ namespace BattleGearUnpacker.Formats
             {
                 Name = string.Empty;
                 Unk10 = 0;
-                Unk24 = 0;
+                Unk24 = -1;
             }
 
             /// <summary>
@@ -242,13 +252,6 @@ namespace BattleGearUnpacker.Formats
             /// <param name="dataStream"></param>
             internal void Write(BinaryStreamWriter headerWriter, SectorStream dataStream)
             {
-                if (IsEmpty)
-                {
-                    // Write empty entry
-                    headerWriter.WritePattern(40, 0);
-                    return;
-                }
-
                 headerWriter.WriteFixedUTF8(Name, 18, 0);
                 headerWriter.WriteInt16(Unk10);
 

@@ -8,21 +8,15 @@ namespace BattleGearUnpacker.Formats
     /// </summary>
     public class ZPACKReader : IDisposable, IAsyncDisposable
     {
-        #region Constants
-
         /// <summary>
         /// The size of each sector.
         /// </summary>
         internal const int SectorSize = 0x800;
 
         /// <summary>
-        /// The default file entry count for <see cref="ZPACK"/>.
+        /// The allocated file entry count for <see cref="ZPACK"/> archives.
         /// </summary>
-        public const int DefaultFileEntryCount = 8192;
-
-        #endregion
-
-        #region Members
+        public const int FileEntryCount = 8192;
 
         /// <summary>
         /// The data <see cref="Stream"/>.
@@ -32,16 +26,12 @@ namespace BattleGearUnpacker.Formats
         /// <summary>
         /// File entry headers in the archive, 8192 count.
         /// </summary>
-        public FileEntry[] FileEntries { get; private set; }
+        public List<FileEntry> FileEntries { get; private set; }
 
         /// <summary>
         /// Whether or not the reader's data stream has been disposed.
         /// </summary>
         public bool IsDisposed { get; private set; }
-
-        #endregion
-
-        #region Constructor
 
         /// <summary>
         /// Create a new <see cref="ZPACKReader"/>.
@@ -50,10 +40,8 @@ namespace BattleGearUnpacker.Formats
         private ZPACKReader(SectorStream dataStream)
         {
             _dataStream = dataStream;
-            FileEntries = new FileEntry[DefaultFileEntryCount];
+            FileEntries = new List<FileEntry>(FileEntryCount);
         }
-
-        #endregion
 
         #region Read
 
@@ -102,9 +90,13 @@ namespace BattleGearUnpacker.Formats
         {
             var reader = new ZPACKReader(dataStream);
             headerReader.BigEndian = false;
-            for (int i = 0; i < DefaultFileEntryCount; i++)
+            for (int i = 0; i < FileEntryCount; i++)
             {
-                reader.FileEntries[i] = new FileEntry(headerReader, dataStream);
+                var entry = new FileEntry(headerReader, dataStream);
+                if (entry.IsEmpty)
+                    break;
+
+                reader.FileEntries.Add(entry);
             }
 
             headerReader.Dispose();
@@ -207,8 +199,6 @@ namespace BattleGearUnpacker.Formats
 
             #endregion
 
-            #region Constructors
-
             /// <summary>
             /// Read a <see cref="FileEntry"/>.
             /// </summary>
@@ -225,10 +215,6 @@ namespace BattleGearUnpacker.Formats
                 Unk24 = headerReader.ReadInt32();
             }
 
-            #endregion
-
-            #region Methods
-
             /// <summary>
             /// Decompress and read the underlying data of this entry.
             /// </summary>
@@ -244,8 +230,6 @@ namespace BattleGearUnpacker.Formats
                 _dataStream.Position = SectorOffset;
                 Zlib.DecompressNext(_dataStream.BaseStream, output, CompressedSize);
             }
-
-            #endregion
         }
     }
 }

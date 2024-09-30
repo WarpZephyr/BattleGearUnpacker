@@ -70,7 +70,7 @@ namespace BattleGearUnpacker.Formats
         public static ZPACKWriter Create(string headerPath, string dataPath)
         {
             var headerStream = File.Create(headerPath);
-            var dataStream = File.Create(dataPath, 4096, FileOptions.SequentialScan);
+            var dataStream = File.Create(dataPath);
             return new ZPACKWriter(headerStream, dataStream, false);
         }
 

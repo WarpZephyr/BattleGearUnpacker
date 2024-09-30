@@ -1,6 +1,7 @@
 ﻿using BattleGearUnpacker.Core.Exceptions;
 using BattleGearUnpacker.Core.Parsing.Xml;
 using BattleGearUnpacker.Formats;
+using System.Diagnostics;
 using System.Xml;
 
 namespace BattleGearUnpacker.Unpackers
@@ -24,9 +25,9 @@ namespace BattleGearUnpacker.Unpackers
             xw.WriteElementString("dataname", Path.GetFileName(dataPath));
             xw.WriteStartElement("entries");
             using var reader = ZPACKReader.Read(headerPath, dataPath);
-            double fileCount = reader.FileEntries.Length;
+            double fileCount = reader.FileEntries.Count;
             int fileNum = 1;
-            for (int i = 0; i < reader.FileEntries.Length; i++)
+            for (int i = 0; i < reader.FileEntries.Count; i++)
             {
                 var entry = reader.FileEntries[i];
                 if (!entry.IsEmpty)
