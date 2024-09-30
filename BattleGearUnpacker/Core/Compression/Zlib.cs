@@ -1,6 +1,7 @@
 ﻿using BinaryMemory;
 using ICSharpCode.SharpZipLib.Zip.Compression;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using System.IO;
 using System.Runtime.CompilerServices;
 
 namespace BattleGearUnpacker.Core.Compression

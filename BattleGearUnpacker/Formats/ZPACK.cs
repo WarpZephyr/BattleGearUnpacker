@@ -1,5 +1,8 @@
 ﻿using BattleGearUnpacker.Core.Compression;
 using BinaryMemory;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace BattleGearUnpacker.Formats
 {
@@ -8,8 +11,6 @@ namespace BattleGearUnpacker.Formats
     /// </summary>
     public class ZPACK
     {
-        #region Constants
-
         /// <summary>
         /// The size of each sector.
         /// </summary>
@@ -20,18 +21,10 @@ namespace BattleGearUnpacker.Formats
         /// </summary>
         public const int FileEntryCount = 8192;
 
-        #endregion
-
-        #region Members
-
         /// <summary>
         /// File entries in the archive, 8192 max.
         /// </summary>
         public List<FileEntry> FileEntries { get; private set; }
-
-        #endregion
-
-        #region Constructors
 
         /// <summary>
         /// Create a new <see cref="ZPACK"/>.
@@ -40,8 +33,6 @@ namespace BattleGearUnpacker.Formats
         {
             FileEntries = new List<FileEntry>(FileEntryCount);
         }
-
-        #endregion
 
         #region Read
 
@@ -83,6 +74,26 @@ namespace BattleGearUnpacker.Formats
             return Read(headerReader, dataSectorStream);
         }
 
+        /// <summary>
+        /// Read a <see cref="ZPACK"/> from a stream.
+        /// </summary>
+        internal static ZPACK Read(BinaryStreamReader headerReader, SectorStream dataStream)
+        {
+            var zpack = new ZPACK();
+
+            headerReader.BigEndian = false;
+            for (int i = 0; i < FileEntryCount; i++)
+            {
+                var entry = new FileEntry(headerReader, dataStream);
+                if (entry.IsEmpty)
+                    break;
+
+                zpack.FileEntries.Add(entry);
+            }
+
+            return zpack;
+        }
+
         #endregion
 
         #region Write
@@ -110,30 +121,6 @@ namespace BattleGearUnpacker.Formats
             using var headerWriter = new BinaryStreamWriter(headerStream, false, true);
             using var dataSectorStream = new SectorStream(dataStream, SectorSize);
             Write(headerWriter, dataSectorStream);
-        }
-
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// Read a <see cref="ZPACK"/> from a stream.
-        /// </summary>
-        internal static ZPACK Read(BinaryStreamReader headerReader, SectorStream dataStream)
-        {
-            var zpack = new ZPACK();
-
-            headerReader.BigEndian = false;
-            for (int i = 0; i < FileEntryCount; i++)
-            {
-                var entry = new FileEntry(headerReader, dataStream);
-                if (entry.IsEmpty)
-                    break;
-
-                zpack.FileEntries.Add(entry);
-            }
-
-            return zpack;
         }
 
         /// <summary>
@@ -198,8 +185,6 @@ namespace BattleGearUnpacker.Formats
 
             #endregion
 
-            #region Constructors
-
             /// <summary>
             /// Create a new and empty <see cref="FileEntry"/>.
             /// </summary>
@@ -241,10 +226,6 @@ namespace BattleGearUnpacker.Formats
                 }
             }
 
-            #endregion
-
-            #region Methods
-
             /// <summary>
             /// Write a <see cref="FileEntry"/>.
             /// </summary>
@@ -278,8 +259,6 @@ namespace BattleGearUnpacker.Formats
                 headerWriter.WriteInt32(Bytes != null ? Bytes.Length : 0);
                 headerWriter.WriteInt32(Unk24);
             }
-
-            #endregion
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using BattleGearUnpacker.Core.Exceptions;
+using System;
+using System.Collections.Generic;
 
 namespace BattleGearUnpacker.Core
 {

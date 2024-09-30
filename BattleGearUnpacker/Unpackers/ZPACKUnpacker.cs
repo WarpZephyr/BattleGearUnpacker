@@ -1,7 +1,9 @@
 ﻿using BattleGearUnpacker.Core.Exceptions;
 using BattleGearUnpacker.Core.Parsing.Xml;
 using BattleGearUnpacker.Formats;
-using System.Diagnostics;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Xml;
 
 namespace BattleGearUnpacker.Unpackers

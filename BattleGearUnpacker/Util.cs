@@ -1,4 +1,6 @@
-﻿namespace BattleGearUnpacker
+﻿using System.IO;
+
+namespace BattleGearUnpacker
 {
     internal static class Util
     {

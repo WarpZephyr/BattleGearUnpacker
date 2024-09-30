@@ -2,7 +2,10 @@
 using BattleGearUnpacker.Core.Graphics;
 using BattleGearUnpacker.Formats.Utility;
 using BinaryMemory;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 
 namespace BattleGearUnpacker.Formats
 {
@@ -73,7 +76,6 @@ namespace BattleGearUnpacker.Formats
             // Check padding
             int alignment = FormatID == FormatAlignment.Align16 ? 16 :
                             FormatID == FormatAlignment.Align128 ? 128 :
-                            FormatID == FormatAlignment.Align1024 ? 1024 :
                             throw new InvalidDataException($"Unknown {nameof(FormatID)}: {FormatID}");
             br.AssertBytePattern(alignment - 8, 0);
 
@@ -103,7 +105,6 @@ namespace BattleGearUnpacker.Formats
             // Check padding
             int alignment = FormatID == FormatAlignment.Align16 ? 16 :
                             FormatID == FormatAlignment.Align128 ? 128 :
-                            FormatID == FormatAlignment.Align1024 ? 1024 :
                             throw new InvalidDataException($"Unknown {nameof(FormatID)}: {FormatID}");
             bw.WriteByte((byte)FormatID);
             bw.WriteUInt16((ushort)Pictures.Count);
@@ -133,12 +134,7 @@ namespace BattleGearUnpacker.Formats
             /// <summary>
             /// Align to 128 bytes.
             /// </summary>
-            Align128 = 1,
-
-            /// <summary>
-            /// Align to 1024 bytes.
-            /// </summary>
-            Align1024 = 2
+            Align128 = 1
         }
 
         #endregion

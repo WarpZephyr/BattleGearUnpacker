@@ -1,8 +1,10 @@
 ﻿using BattleGearUnpacker.Core.Exceptions;
 using BattleGearUnpacker.Core.Graphics.Quantization;
-using Hjg.Pngcs.Chunks;
 using Hjg.Pngcs;
+using Hjg.Pngcs.Chunks;
+using System;
 using System.Drawing;
+using System.IO;
 
 namespace BattleGearUnpacker.Core.Graphics
 {
@@ -120,13 +122,15 @@ namespace BattleGearUnpacker.Core.Graphics
         /// 16-bit colors will be reduced into 8-bit either way.
         /// </summary>
         /// <param name="path">The path to the PNG to read.</param>
+        /// <param name="maxWidth">The maximum width the image can be.</param>
+        /// <param name="maxWidth">The maximum height the image can be.</param>
         /// <param name="image">The pixel data read.</param>
         /// <param name="palette">The palette read if present.</param>
         /// <param name="indexed">Whether or not the PNG was indexed.</param>
         /// <param name="bitDepth">How many bits there are per pixel in the PNG.</param>
         /// <exception cref="FriendlyException">The image dimensions were too large.</exception>
         /// <exception cref="Exception">Exclusive color types were detected being used together.</exception>
-        public static void ReadPNG(string path, out Pixel[] image, out Color[] palette, out bool indexed, out int bitDepth)
+        public static void ReadPNG(string path, int maxWidth, int maxHeight, out Pixel[] image, out Color[] palette, out bool indexed, out int bitDepth)
         {
             using var fs = File.OpenRead(path);
             var reader = new PngReader(fs);
@@ -137,8 +141,8 @@ namespace BattleGearUnpacker.Core.Graphics
             int height = imageInfo.Rows;
             bitDepth = imageInfo.BitDepth;
 
-            if (width > ushort.MaxValue || height > ushort.MaxValue)
-                throw new FriendlyException($"Image dimensions too large: {width},{height}");
+            if (width > maxWidth || height > maxHeight)
+                throw new FriendlyException($"Image dimensions too large: {width},{height} is above {maxWidth},{maxHeight}");
 
             image = new Pixel[width * height];
             bool trueColor = reader.ImgInfo.Channels >= 3;

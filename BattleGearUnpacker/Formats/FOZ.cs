@@ -1,6 +1,7 @@
 ﻿using BattleGearUnpacker.Core.Compression;
 using BattleGearUnpacker.Formats.Utility;
 using BinaryMemory;
+using System.IO;
 
 namespace BattleGearUnpacker.Formats
 {

@@ -1,4 +1,5 @@
 ﻿using BattleGearUnpacker.Core.Exceptions;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Xml;
 
@@ -94,8 +95,6 @@ namespace BattleGearUnpacker.Core.Parsing.Xml
         }
 
         #endregion
-
-        #region Node Value Reading
 
         #region Generic
 
@@ -342,8 +341,6 @@ namespace BattleGearUnpacker.Core.Parsing.Xml
             }
             return value;
         }
-
-        #endregion
 
         #endregion
 

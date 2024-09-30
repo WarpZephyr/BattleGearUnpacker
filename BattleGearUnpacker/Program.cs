@@ -2,6 +2,8 @@
 using BattleGearUnpacker.Core.Exceptions;
 using BattleGearUnpacker.Formats;
 using BattleGearUnpacker.Unpackers;
+using System;
+using System.IO;
 
 namespace BattleGearUnpacker
 {

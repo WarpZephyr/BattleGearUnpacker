@@ -1,10 +1,13 @@
-﻿using BattleGearUnpacker.Core.Graphics;
-using BattleGearUnpacker.Formats;
-using static BattleGearUnpacker.Formats.BG3TIM2;
-using System.Drawing;
-using System.Xml;
+﻿using BattleGearUnpacker.Core.Exceptions;
+using BattleGearUnpacker.Core.Graphics;
 using BattleGearUnpacker.Core.Parsing.Xml;
-using BattleGearUnpacker.Core.Exceptions;
+using BattleGearUnpacker.Formats;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Xml;
+using static BattleGearUnpacker.Formats.BG3TIM2;
 
 namespace BattleGearUnpacker.Unpackers
 {
@@ -199,7 +202,7 @@ namespace BattleGearUnpacker.Unpackers
                     string pngPath = Path.Combine(folder, pngName);
                     if (!File.Exists(pngPath))
                         throw new FriendlyException($"Could not find PNG: {pngPath}");
-                    ImageUtil.ReadPNG(pngPath, out Pixel[] image, out Color[] clut, out bool pngIndexed, out int pngBitDepth);
+                    ImageUtil.ReadPNG(pngPath, ushort.MaxValue, ushort.MaxValue, out Pixel[] image, out Color[] clut, out bool pngIndexed, out int pngBitDepth);
                     
                     byte mipmapTextures = pictureNode.ReadByte("mipmaptextures");
                     ushort width = pictureNode.ReadUInt16("width");
@@ -305,7 +308,7 @@ namespace BattleGearUnpacker.Unpackers
                                 pngPath = Path.Combine(folder, pngName);
                                 if (!File.Exists(pngPath))
                                     throw new FriendlyException($"Could not find mipmap PNG: {pngPath}");
-                                ImageUtil.ReadPNG(pngPath, out image, out clut, out pngIndexed, out pngBitDepth);
+                                ImageUtil.ReadPNG(pngPath, ushort.MaxValue, ushort.MaxValue, out image, out clut, out pngIndexed, out pngBitDepth);
                                 ImageUtil.ConvertPixelFormat(pngIndexed, indexed, pngBitDepth, bitDepth, true, image, clut, out image, out clut);
                                 picture.Mipmaps.Add(image);
                             }

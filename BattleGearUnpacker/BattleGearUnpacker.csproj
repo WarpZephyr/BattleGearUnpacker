@@ -3,8 +3,12 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Version>1.0.1</Version>
+    <Company>WarpZephyr</Company>
+    <Description>Unpacks and repacks various Battle Gear file formats.</Description>
+    <Copyright>Copyright © WarpZephyr 2024</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

@@ -2,7 +2,9 @@
 // https://stackoverflow.com/a/31193455
 // https://gist.github.com/DanielSWolf/0ab6a96899cc5377bf54
 
+using System;
 using System.Text;
+using System.Threading;
 
 namespace BattleGearUnpacker.Core
 {

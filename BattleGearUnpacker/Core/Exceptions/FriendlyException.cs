@@ -1,4 +1,6 @@
-﻿namespace BattleGearUnpacker.Core.Exceptions
+﻿using System;
+
+namespace BattleGearUnpacker.Core.Exceptions
 {
     /// <summary>
     /// Thrown to describe an error to a user in a more friendly way.
