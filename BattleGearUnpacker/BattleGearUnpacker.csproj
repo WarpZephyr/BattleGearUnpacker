@@ -5,7 +5,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Company>WarpZephyr</Company>
     <Description>Unpacks and repacks various Battle Gear file formats.</Description>
     <Copyright>Copyright © WarpZephyr 2024</Copyright>
