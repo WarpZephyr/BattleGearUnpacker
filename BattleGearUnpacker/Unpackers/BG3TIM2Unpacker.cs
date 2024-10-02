@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Reflection.Emit;
 using System.Xml;
 using static BattleGearUnpacker.Formats.BG3TIM2;
 
@@ -138,8 +139,13 @@ namespace BattleGearUnpacker.Unpackers
                     xw.WriteStartElement("subimages");
                     foreach (var subimage in picture.SubImages)
                     {
+                        outName = $"{subimage.Name}.png";
+                        picOutPath = Path.Combine(folder, outName);
+
+                        ImageUtil.WritePNG(picOutPath, subimage.Width, subimage.Height, bitDepth, hasAlpha, indexed, subimage.GetPixels(picture.Image, picture.Width), picture.Clut);
                         xw.WriteStartElement("subimage");
                         xw.WriteElementString("name", subimage.Name);
+                        xw.WriteElementString("filename", outName);
                         xw.WriteElementString("width", $"{subimage.Width}");
                         xw.WriteElementString("height", $"{subimage.Height}");
                         xw.WriteElementString("x", $"{subimage.X}");
@@ -307,6 +313,7 @@ namespace BattleGearUnpacker.Unpackers
                         foreach (XmlNode subImageNode in subImagesNode)
                         {
                             string subImageName = subImageNode.ReadString("name");
+                            string subImageFileName = subImageNode.ReadStringOrDefault("filename", $"{subImageName}.png");
                             ushort subImageWidth = subImageNode.ReadUInt16("width");
                             ushort subImageHeight = subImageNode.ReadUInt16("height");
                             ushort subImageX = subImageNode.ReadUInt16("x");
@@ -319,6 +326,14 @@ namespace BattleGearUnpacker.Unpackers
                                 X = subImageX,
                                 Y = subImageY
                             };
+
+                            string subImagePath = Path.Combine(folder, subImageFileName);
+                            if (File.Exists(subImagePath))
+                            {
+                                ImageUtil.ReadPNG(subImagePath, subImageWidth, subImageHeight, out image, out clut, out pngIndexed, out pngBitDepth);
+                                ImageUtil.ConvertPixelFormat(pngIndexed, indexed, pngBitDepth, bitDepth, true, image, clut, out image, out clut);
+                                subImage.SetPixels(picture.Image, image, picture.Width);
+                            }
 
                             picture.SubImages.Add(subImage);
                         }

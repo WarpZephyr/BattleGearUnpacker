@@ -1758,6 +1758,61 @@ namespace BattleGearUnpacker.Formats
                     bw.WriteUInt16(X);
                     bw.WriteUInt16(Y);
                 }
+
+                /// <summary>
+                /// Gets the pixels of the <see cref="SubImage"/> from the main image data.
+                /// </summary>
+                /// <param name="image">The pixels of the main image data.</param>
+                /// <param name="width">The width of the main image data.</param>
+                /// <returns>The pixels of the <see cref="SubImage"/>.</returns>
+                public Pixel[] GetPixels(Pixel[] image, ushort width)
+                {
+                    int length = Width * Height;
+
+                    int x = 0;
+                    int y = 0;
+                    Pixel[] pixels = new Pixel[length];
+                    for (int i = 0; i < length; i++)
+                    {
+                        if (x == Width)
+                        {
+                            x = 0;
+                            y++;
+                        }
+
+                        pixels[i] = image[(x + X) + ((y + Y) * width)];
+                        x++;
+                    }
+                    return pixels;
+                }
+
+                /// <summary>
+                /// Sets the pixels at the <see cref="SubImage"/> location in the main image data.
+                /// </summary>
+                /// <param name="image">The pixels of the main image data.</param>
+                /// <param name="pixels">The pixels of the <see cref="SubImage"/> data.</param>
+                /// <param name="width">The width of the main image data.</param>
+                public void SetPixels(Pixel[] image, Pixel[] pixels, ushort width)
+                {
+                    int length = Width * Height;
+
+                    if (length > pixels.Length)
+                        throw new ArgumentException($"Not enough pixels to set entire range: {pixels.Length}; Expected: {length} pixels.", nameof(pixels));
+
+                    int x = 0;
+                    int y = 0;
+                    for (int i = 0; i < length; i++)
+                    {
+                        if (x == Width)
+                        {
+                            x = 0;
+                            y++;
+                        }
+
+                        image[(x + X) + ((y + Y) * width)] = pixels[i];
+                        x++;
+                    }
+                }
             }
 
             #endregion
