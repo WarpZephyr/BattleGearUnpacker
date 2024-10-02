@@ -236,8 +236,7 @@ namespace BattleGearUnpacker.Formats
             /// Whether or not the image has alpha.
             /// </summary>
             public bool HasAlpha =>
-                GsTex.TextureColorComponent == TextureColorComponentType.RGBA
-                && ((Indexed ? ClutType.ClutColorType : ImageColorType) != ColorType.RGB24);
+                (Indexed ? ClutType.ClutColorType : ImageColorType) == ColorType.RGB32;
 
             /// <summary>
             /// Gets the bit depth per pixel according to the color type.
@@ -475,15 +474,23 @@ namespace BattleGearUnpacker.Formats
                     }
 
                     // User Data
-                    if (userDataSize % SUBIMAGE_SIZE == 0)
+                    bool largeAligned = alignment > 16;
+                    if (userDataSize >= SUBIMAGE_SIZE)
                     {
                         int subImageCount = userDataSize / SUBIMAGE_SIZE;
                         if (subImageCount > 0)
                         {
-                            SubImages = new List<SubImage>(subImageCount);
+                            SubImages = new List<SubImage>();
                             for (int i = 0; i < subImageCount; i++)
                             {
-                                SubImages.Add(new SubImage(br));
+                                var subImage = new SubImage(br);
+
+                                // If the name is empty we just hit 128 alignment probably
+                                // See: BG3ZPACK.ARC/M_AP2.TM2
+                                if (largeAligned && subImage.Name == string.Empty)
+                                    break;
+
+                                SubImages.Add(subImage);
                             }
                         }
                         else
@@ -597,8 +604,8 @@ namespace BattleGearUnpacker.Formats
                         case ColorType.IndexColor4:
                             // Do two at once
                             byte indexRawValue = image[i];
-                            int index1 = indexRawValue >> 4;
-                            int index2 = indexRawValue & 0b00001111;
+                            int index1 = indexRawValue & 0b00001111;
+                            int index2 = indexRawValue >>> 4;
                             pixels[pixelIndex++] = new Pixel(clut[index1], index1);
                             pixels[pixelIndex++] = new Pixel(clut[index2], index2);
                             i++;
@@ -831,11 +838,11 @@ namespace BattleGearUnpacker.Formats
                         int length = even ? pixels.Length : pixels.Length - 1;
                         for (int i = 0; i < length; i++)
                         {
-                            bw.WriteByte((byte)(pixels[i++].Index << 4 | pixels[i].Index));
+                            bw.WriteByte((byte)(pixels[i++].Index | pixels[i].Index << 4));
                         }
 
                         if (!even)
-                            bw.WriteByte((byte)(pixels[length].Index << 4));
+                            bw.WriteByte((byte)pixels[length].Index);
                     }
                     else if (colorType == ColorType.IndexColor8)
                     {
@@ -929,8 +936,6 @@ namespace BattleGearUnpacker.Formats
                     CompoundColors(colors);
                 }
 
-                // Check if GsTex requires alpha to be ignored.
-                bool includeAlpha = GsTex.TextureColorComponent == TextureColorComponentType.RGBA;
                 for (int i = 0; i < colorCount; i++)
                 {
                     switch (ClutType.ClutColorType)
@@ -1734,9 +1739,7 @@ namespace BattleGearUnpacker.Formats
                 /// <param name="br">The stream reader.</param>
                 internal SubImage(BinaryStreamReader br)
                 {
-                    Name = br.ReadASCII(16);
-                    br.AssertUInt32(0U); // part of name?
-                    br.AssertUInt32(0U); // part of name?
+                    Name = br.ReadASCII(24);
                     Width = br.ReadUInt16();
                     Height = br.ReadUInt16();
                     X = br.ReadUInt16();
@@ -1749,9 +1752,7 @@ namespace BattleGearUnpacker.Formats
                 /// <param name="bw">The stream writer.</param>
                 internal void Write(BinaryStreamWriter bw)
                 {
-                    bw.WriteFixedASCII(Name, 16, 0);
-                    bw.WriteUInt32(0);
-                    bw.WriteUInt32(0);
+                    bw.WriteFixedASCII(Name, 24, 0);
                     bw.WriteUInt16(Width);
                     bw.WriteUInt16(Height);
                     bw.WriteUInt16(X);

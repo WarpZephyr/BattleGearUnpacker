@@ -57,12 +57,6 @@ namespace BattleGearUnpacker.Unpackers
                 xw.WriteElementString("extendedheader", $"{picture.WriteExtendedHeader}");
                 xw.WriteElementString("comment", picture.Comment);
 
-                // Whether or not to set alpha to 0x80, 128, or 50%
-                // Sometimes images say they don't have alpha in GsTex0, but are using RGB32 (RGBA) storage, the alpha channel is set to 0x80 in this.
-                xw.WriteElementString("correctalpha",
-                    $"{(picture.Indexed ? picture.ClutType.ClutColorType : picture.ImageColorType) == Picture.ColorType.RGB32
-                    && picture.GsTex.TextureColorComponent == Picture.TextureColorComponentType.RGB}");
-
                 xw.WriteStartElement("cluttype");
                 xw.WriteElementString("clutcolortype", $"{Picture.GetColorTypeName(picture.ClutType.ClutColorType)}");
                 xw.WriteElementString("clutcompound", $"{picture.ClutType.ClutCompound}");
@@ -215,8 +209,6 @@ namespace BattleGearUnpacker.Unpackers
                         Comment = pictureNode.ReadStringOrDefault("comment", string.Empty)
                     };
 
-                    bool correctAlpha = pictureNode.ReadBooleanOrDefault("correctalpha", false);
-
                     if (indexed)
                     {
                         picture.ClutType = new Picture.ClutTypeConfig(
@@ -314,38 +306,6 @@ namespace BattleGearUnpacker.Unpackers
                     if (userdataNode != null)
                     {
                         picture.UserData = Convert.FromBase64String(userdataNode.InnerText);
-                    }
-
-                    // Whether or not to set alpha to 0x80, 128, or 50%
-                    // Sometimes images say they don't have alpha in GsTex0, but are using RGB32 (RGBA) storage, the alpha channel is set to 0x80 in this.
-                    if (correctAlpha)
-                    {
-                        // Correct alpha on Clut
-                        if (indexed)
-                        {
-                            for (int i = 0; i < picture.Clut.Length; i++)
-                            {
-                                picture.Clut[i] = Color.FromArgb(0x80, picture.Clut[i]);
-                            }
-                        }
-
-                        // Correct alpha on LV0
-                        for (int i = 0; i < picture.Image.Length; i++)
-                        {
-                            var pixel = picture.Image[i];
-                            picture.Image[i] = new Pixel(Color.FromArgb(0x80, pixel.Color), pixel.Index);
-                        }
-
-                        // Correct alpha on mipmaps
-                        for (int i = 0; i < picture.Mipmaps.Count; i++)
-                        {
-                            var mipmap = picture.Mipmaps[i];
-                            for (int j = 0; j < mipmap.Length; j++)
-                            {
-                                var pixel = mipmap[j];
-                                picture.Mipmaps[i][j] = new Pixel(Color.FromArgb(0x80, pixel.Color), pixel.Index);
-                            }
-                        }
                     }
 
                     file.Pictures.Add(picture);

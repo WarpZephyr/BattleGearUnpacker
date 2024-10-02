@@ -230,9 +230,8 @@ namespace BattleGearUnpacker.Formats
             /// <summary>
             /// Whether or not the image has alpha.
             /// </summary>
-            public bool HasAlpha =>
-                GsTex.TextureColorComponent == TextureColorComponentType.RGBA
-                && ((Indexed ? ClutType.ClutColorType : ImageColorType) != ColorType.RGB24);
+            public bool HasAlpha
+                => (Indexed ? ClutType.ClutColorType : ImageColorType) == ColorType.RGB32;
 
             /// <summary>
             /// Gets the bit depth per pixel according to the color type.
@@ -576,8 +575,8 @@ namespace BattleGearUnpacker.Formats
                         case ColorType.IndexColor4:
                             // Do two at once
                             byte indexRawValue = image[i];
-                            int index1 = indexRawValue >> 4;
-                            int index2 = indexRawValue & 0b00001111;
+                            int index1 = indexRawValue & 0b00001111;
+                            int index2 = indexRawValue >> 4;
                             pixels[pixelIndex++] = new Pixel(clut[index1], index1);
                             pixels[pixelIndex++] = new Pixel(clut[index2], index2);
                             i++;
@@ -806,11 +805,11 @@ namespace BattleGearUnpacker.Formats
                         int length = even ? pixels.Length : pixels.Length - 1;
                         for (int i = 0; i < length; i++)
                         {
-                            bw.WriteByte((byte)(pixels[i++].Index << 4 | pixels[i].Index));
+                            bw.WriteByte((byte)(pixels[i++].Index | pixels[i].Index << 4));
                         }
 
                         if (!even)
-                            bw.WriteByte((byte)(pixels[length].Index << 4));
+                            bw.WriteByte((byte)pixels[length].Index);
                     }
                     else if (colorType == ColorType.IndexColor8)
                     {

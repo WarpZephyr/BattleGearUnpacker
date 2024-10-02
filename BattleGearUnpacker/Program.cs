@@ -4,6 +4,7 @@ using BattleGearUnpacker.Formats;
 using BattleGearUnpacker.Unpackers;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace BattleGearUnpacker
 {
@@ -119,7 +120,10 @@ namespace BattleGearUnpacker
             else if (BG3TIM2.IsRead(path, out BG3TIM2? file))
             {
                 Console.WriteLine("Unpacking BG3 TIM2...");
-                BG3TIM2Unpacker.Unpack(path, file);
+                string filename = Path.GetFileName(path);
+                string? folder = Path.GetDirectoryName(path) ?? throw new FriendlyException($"Could not get folder path of: \"{path}\"");
+                string outFolder = Path.Combine(folder, filename.Replace('.', '-'));
+                BG3TIM2Unpacker.Unpack(filename, outFolder, file);
             }
             else if (path.EndsWith("_tim2.xml", StringComparison.CurrentCultureIgnoreCase))
             {
@@ -131,7 +135,9 @@ namespace BattleGearUnpacker
             else if (path.EndsWith("_bg3tim2.xml", StringComparison.CurrentCultureIgnoreCase))
             {
                 Console.WriteLine("Repacking BG3 TIM2...");
-                BG3TIM2Unpacker.Repack(path);
+                string? folder = Path.GetDirectoryName(path) ?? throw new FriendlyException($"Could not get folder path of: \"{path}\"");
+                string? outFolder = Path.GetDirectoryName(folder) ?? throw new FriendlyException($"Could not get folder path of: \"{folder}\"");
+                BG3TIM2Unpacker.Repack(folder, outFolder);
             }
             else if (path.EndsWith("_bg3zpack.xml", StringComparison.CurrentCultureIgnoreCase))
             {
@@ -170,6 +176,12 @@ namespace BattleGearUnpacker
                 ZPACKUnpacker.Repack(folder, outFolder, cpb);
                 cpb.Dispose();
                 Console.Write(" Done.\n");
+            }
+            else if (File.Exists(Path.Combine(folder, "_bg3tim2.xml")))
+            {
+                Console.WriteLine("Repacking BG3 TIM2...");
+                string? outFolder = Path.GetDirectoryName(folder) ?? throw new FriendlyException($"Could not get folder path of: \"{folder}\"");
+                BG3TIM2Unpacker.Repack(folder, outFolder);
             }
             else
             {

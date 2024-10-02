@@ -13,21 +13,17 @@ namespace BattleGearUnpacker.Unpackers
 {
     public static class BG3TIM2Unpacker
     {
-        public static void Unpack(string path, BG3TIM2 file)
+        public static void Unpack(string filename, string folder, BG3TIM2 file)
         {
-            string filename = Path.GetFileName(path);
             string extensionless = Path.GetFileNameWithoutExtension(filename);
-            string? folder = Path.GetDirectoryName(path);
-            if (string.IsNullOrEmpty(folder))
-                throw new FriendlyException($"Could not get folder path of: {path}");
-
             var xws = new XmlWriterSettings
             {
                 Indent = true
             };
 
+            Directory.CreateDirectory(folder);
             bool indexName = file.Pictures.Count > 1;
-            var xw = XmlWriter.Create(Path.Combine(folder, $"{extensionless}_bg3tim2.xml"), xws);
+            var xw = XmlWriter.Create(Path.Combine(folder, "_bg3tim2.xml"), xws);
             xw.WriteStartElement("bg3tim2");
             xw.WriteElementString("decoder", Program.ProgramName);
             xw.WriteElementString("filename", filename);
@@ -56,12 +52,6 @@ namespace BattleGearUnpacker.Unpackers
                 xw.WriteElementString("height", $"{picture.Height}");
                 xw.WriteElementString("extendedheader", $"{picture.WriteExtendedHeader}");
                 xw.WriteElementString("comment", picture.Comment);
-
-                // Whether or not to set alpha to 0x80, 128, or 50%
-                // Sometimes images say they don't have alpha in GsTex0, but are using RGB32 (RGBA) storage, the alpha channel is set to 0x80 in this.
-                xw.WriteElementString("correctalpha",
-                    $"{(picture.Indexed ? picture.ClutType.ClutColorType : picture.ImageColorType) == Picture.ColorType.RGB32
-                    && picture.GsTex.TextureColorComponent == Picture.TextureColorComponentType.RGB}");
 
                 xw.WriteStartElement("cluttype");
                 xw.WriteElementString("clutcolortype", $"{Picture.GetColorTypeName(picture.ClutType.ClutColorType)}");
@@ -176,15 +166,11 @@ namespace BattleGearUnpacker.Unpackers
             xw.Close();
         }
 
-        public static void Repack(string path)
+        public static void Repack(string folder, string outFolder)
         {
-            string? folder = Path.GetDirectoryName(path);
-            if (string.IsNullOrEmpty(folder))
-                throw new FriendlyException($"Could not get folder path of: {path}");
-
             var file = new BG3TIM2();
             var xml = new XmlDocument();
-            xml.Load(path);
+            xml.Load(Path.Combine(folder, "_bg3tim2.xml"));
             string decoder = xml.ReadStringOrDefault("bg3tim2/decoder", string.Empty);
             if (decoder != Program.ProgramName)
                 Console.WriteLine($"Unrecognized decoder: {decoder}");
@@ -221,8 +207,6 @@ namespace BattleGearUnpacker.Unpackers
                         WriteExtendedHeader = pictureNode.ReadBooleanOrDefault("extendedheader", false),
                         Comment = pictureNode.ReadStringOrDefault("comment", string.Empty)
                     };
-
-                    bool correctAlpha = pictureNode.ReadBooleanOrDefault("correctalpha", false);
 
                     if (indexed)
                     {
@@ -340,43 +324,11 @@ namespace BattleGearUnpacker.Unpackers
                         }
                     }
 
-                    // Whether or not to set alpha to 0x80, 128, or 50%
-                    // Sometimes images say they don't have alpha in GsTex0, but are using RGB32 (RGBA) storage, the alpha channel is set to 0x80 in this.
-                    if (correctAlpha)
-                    {
-                        // Correct alpha on Clut
-                        if (indexed)
-                        {
-                            for (int i = 0; i < picture.Clut.Length; i++)
-                            {
-                                picture.Clut[i] = Color.FromArgb(0x80, picture.Clut[i]);
-                            }
-                        }
-
-                        // Correct alpha on LV0
-                        for (int i = 0; i < picture.Image.Length; i++)
-                        {
-                            var pixel = picture.Image[i];
-                            picture.Image[i] = new Pixel(Color.FromArgb(0x80, pixel.Color), pixel.Index);
-                        }
-
-                        // Correct alpha on mipmaps
-                        for (int i = 0; i < picture.Mipmaps.Count; i++)
-                        {
-                            var mipmap = picture.Mipmaps[i];
-                            for (int j = 0; j < mipmap.Length; j++)
-                            {
-                                var pixel = mipmap[j];
-                                picture.Mipmaps[i][j] = new Pixel(Color.FromArgb(0x80, pixel.Color), pixel.Index);
-                            }
-                        }
-                    }
-
                     file.Pictures.Add(picture);
                 }
             }
 
-            string outPath = Path.Combine(folder, outName);
+            string outPath = Path.Combine(outFolder, outName);
             Util.Backup(outPath);
             file.Write(outPath);
         }
