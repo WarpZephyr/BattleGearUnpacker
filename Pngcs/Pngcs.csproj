@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+	<ImplicitUsings>disable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+    <Description>PNGCS: A library for reading and writing PNG images</Description>
+    <Company>http://hjg.com.ar/</Company>
+    <Product>Pngcs</Product>
+    <Copyright>Copyright ©  2012</Copyright>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <BaseOutputPath>..\bin\</BaseOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SharpZipLib">
+      <Version>1.4.2</Version>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="changes.txt" />
+    <Content Include="LICENSE.txt" />
+  </ItemGroup>
+
+</Project>
