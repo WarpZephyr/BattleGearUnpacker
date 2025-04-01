@@ -31,11 +31,10 @@ GST | Decompress and recompress.
 If you want to build the project you should clone it with these commands in git bash in a folder of your choosing:  
 ```
 git clone https://github.com/WarpZephyr/BattleGearUnpacker.git  
-git clone https://github.com/WarpZephyr/BinaryMemory.git  
-git clone https://github.com/WarpZephyr/pngcs.git  
+git clone https://github.com/WarpZephyr/BinaryMemory.git
 ```
 
-There is also a SharpZipLib dependency added via nuget.  
+There are also SharpZipLib and SixLabors.ImageSharp dependencies added via nuget.  
 After that is done, build BattleGearUnpacker.  
 
 Dependencies subject to change in the future.
