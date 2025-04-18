@@ -135,7 +135,7 @@ namespace BattleGearUnpacker.Core.Images
 
             var palette = reader.GetPaletteColors();
             ReadInto(reader, image, palette, indexed, width, height);
-            return new PngImage(width, height, Math.Max(bitDepth, 8), reader.ImgInfo.HasAlpha, indexed, palette, image);
+            return new PngImage(width, height, Math.Min(bitDepth, 8), reader.ImgInfo.HasAlpha, indexed, palette, image);
         }
 
         public void ReadSubImage(string path, int x, int y)
